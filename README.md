@@ -109,11 +109,22 @@ Yes, if you're already hosting the Docker image on a public registry like Docker
    ```
 
 4. **Access the Application**:
-   - Determine your Linux workstation’s IP on the LAN (e.g., `192.168.50.247`).
+   - Determine your Linux workstation’s IP on the LAN (e.g., `192.168.1.20`).
    - From another device on the LAN:
-     - Slideshow: `http://192.168.50.247:8080/display`
-     - Admin: `http://192.168.50.247:8080/admin`
+     - Slideshow: `http://192.168.1.20:8080/display`
+     - Admin: `http://192.168.1.20:8080/admin`
 
 ## Conclusion
 
 By following these steps, I’ve created a feature-rich, stable, and customizable digital picture frame solution at a fraction of the cost of commercial options. My Android tablets, set in kiosk mode and mounted on the wall, detect motion via their front cameras and display family images and videos only when someone is nearby—conserving battery and running minimal code on the frontend. The backend dynamically calculates video durations at upload time, ensuring flawless autoplay without additional overhead. I can easily manage media from my phone or computer’s browser, making this solution more flexible, private, and economical than off-the-shelf digital frames.
+
+## Authorship and License
+
+**Author:** Panagiotis Georgiadis
+
+**Copyright:**  
+© Panagiotis Georgiadis. All rights reserved.
+
+Any unauthorized use or distribution of this project’s code or concepts is strictly prohibited.
+
+For inquiries about usage, permissions, or contributions, please contact me directly.
