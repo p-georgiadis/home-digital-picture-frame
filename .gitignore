@@ -1,3 +1,51 @@
-.venv
-.idea
-/app/__pycache__
+# Virtual environment
+.venv/
+env/
+ENV/
+
+# Byte-compiled or other Python artifacts
+*.py[cod]
+__pycache__/
+*.pyo
+
+# Logs and debug files
+*.log
+*.bak
+*.swp
+*.tmp
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# IDE-specific files
+.idea/
+.vscode/
+
+# Test coverage files
+.coverage
+*.cover
+.cache/
+
+# Database
+app/db.sqlite3
+
+# Static media uploads and generated files
+app/media/
+app/media/thumbnails/
+
+# Temporary files or directories
+tmp/
+temp/
+*.pid
+*.seed
+*.backup
+
+# Docker files
+docker-compose.override.yml
+docker-compose.debug.yml
+*.tar
+
+# Other
+*.env
+*.iml

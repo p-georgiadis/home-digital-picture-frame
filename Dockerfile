@@ -1,19 +1,40 @@
-FROM python:3.12-slim
+# Stage 1: Build stage
+FROM python:3.12-slim AS builder
 
-# Install system dependencies: ffmpeg for video thumbnails, etc.
-RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+# Install system dependencies for building
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
-# Copy requirements and install them
+# Copy dependencies first to leverage Docker layer caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the application code
+# Copy application code
 COPY app/ app/
 COPY templates/ templates/
 COPY static/ static/
+
+# Stage 2: Final image
+FROM python:3.12-slim
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy application files from the builder stage
+COPY --from=builder /app /app
+
+# Copy installed Python dependencies
+COPY --from=builder /usr/local/lib/python3.12 /usr/local/lib/python3.12
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Set environment variables
 ENV FLASK_APP=app/app.py
