@@ -140,16 +140,18 @@ def delete_item(item_id):
 
 @app.route('/display')
 def display():
-    global current_index
+    if 'current_index' not in session:
+        session['current_index'] = 0
+
     db_session = Session()
     media_items = db_session.query(MediaItem).all()
 
     if not media_items:
         return render_template('single_media.html', media_url=None, is_video=False, refresh_interval=10)
 
-    current_index = current_index % len(media_items)
+    current_index = session['current_index'] % len(media_items)
     media = media_items[current_index]
-    current_index += 1
+    session['current_index'] += 1  # Update the session index
 
     is_video = (media.filetype == 'video')
     media_url = f"/media/{media.filename}"

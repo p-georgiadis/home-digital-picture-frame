@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Float
 from sqlalchemy.orm import sessionmaker, scoped_session, declarative_base
 import os
 
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "db.sqlite3")
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "media", "db.sqlite3")
 Base = declarative_base()
 
 class MediaItem(Base):
