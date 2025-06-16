@@ -36,6 +36,11 @@ THUMB_DIR = os.path.join(MEDIA_DIR, 'thumbnails')
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
 app.secret_key = FLASK_SECRET_KEY
 
+# Middleware to handle reverse proxy headers (if needed)
+# Comment out the following lines if your app is not behind a reverse proxy
+from werkzeug.middleware.proxy_fix import ProxyFix
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
 os.makedirs(THUMB_DIR, exist_ok=True)
 
 def _build_msal_app(cache=None):
