@@ -1,48 +1,33 @@
-# Stage 1: Build stage
-FROM python:3.12-slim AS builder
+# ──────────────────────────────────────────────────────────────
+# Digital Picture Frame  –  slim, single-stage image
+# - Installs Python wheels directly in the final layer
+# - Uses a tiny static FFmpeg build (no apt caches, no duplicate libs)
+# ──────────────────────────────────────────────────────────────
+FROM python:3.12-slim
 
-# Install system dependencies for building
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+# ---------- install ffmpeg / ffprobe (static build ~15 MB) -----
+RUN set -eux; \
+    apt-get update && apt-get install -y curl ca-certificates --no-install-recommends && \
+    curl -L -o /usr/local/bin/ffmpeg  https://github.com/FFmpeg/FFmpeg/releases/download/n6.1.1/ffmpeg-n6.1.1-linux64 && \
+    curl -L -o /usr/local/bin/ffprobe https://github.com/FFmpeg/FFmpeg/releases/download/n6.1.1/ffprobe-n6.1.1-linux64 && \
+    chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe && \
+    apt-get purge -y curl && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
 
-# Set working directory
+# ---------- set workdir & copy only what we need ---------------
 WORKDIR /app
-
-# Copy dependencies first to leverage Docker layer caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
 COPY app/ app/
 COPY templates/ templates/
 COPY static/ static/
 
-# Stage 2: Final image
-FROM python:3.12-slim
+# ---------- environment & startup ------------------------------
+ENV FLASK_APP=app/app.py \
+    FLASK_RUN_HOST=0.0.0.0 \
+    FLASK_RUN_PORT=8080
 
-# Install runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Set working directory
-WORKDIR /app
-
-# Copy application files from the builder stage
-COPY --from=builder /app /app
-
-# Copy installed Python dependencies
-COPY --from=builder /usr/local/lib/python3.12 /usr/local/lib/python3.12
-COPY --from=builder /usr/local/bin /usr/local/bin
-
-# Set environment variables
-ENV FLASK_APP=app/app.py
-ENV FLASK_RUN_HOST=0.0.0.0
-ENV FLASK_RUN_PORT=8080
-
-# Expose the port
 EXPOSE 8080
-
-# Run waitress as the server
 CMD ["waitress-serve", "--host=0.0.0.0", "--port=8080", "app.app:app"]
